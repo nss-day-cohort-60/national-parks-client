@@ -3,7 +3,7 @@ import { useState, useEffect } from "react"
 export const BlogFilter = () => {
     const [blogs, setBlogs] = useState([{ }])
     const [parks, setParks] = useState([{ }])
-    const [searchTerm, setSearchTerm] = useState("")
+    const [searchTerm, setSearchTerm] = useState(" ")
 
     const filteredBlogFetcher = (park_id) => {
         return fetch(`http://localhost:8088/blogs?park_id=${park_id}`)
@@ -33,8 +33,14 @@ export const BlogFilter = () => {
         menuHTML()
     }, [parks, blogs])
 
+    const filterAndSearch = () => {
+        return fetch(`http://localhost:8088/blogs?park_id=&key_word=tree`)
+                .then(res => res.json())
+                .then(data => setBlogs(data))
+    }
+
     useEffect(() => {
-        
+
     }, [searchTerm])
 
     const menuHTML = () => {
@@ -42,7 +48,14 @@ export const BlogFilter = () => {
             <section className='blogFilterSearch--container'>
                 <div className="filter--container">
                     <label>Filter Blogs by Park: </label>
-                    <select className="filter" onChange={ (e) => [ e.target.value == 0? getAllBlogs() : filteredBlogFetcher(e.target.value)]}>
+                    <select className="filter" onChange={ (e) => {
+                        if (searchTerm === " " || searchTerm === ""){
+                            e.target.value == 0? getAllBlogs() : filteredBlogFetcher(e.target.value)}
+                        else {
+                            filteredBlogFetcher('*')
+                        }
+                        }
+                        }>
                         <option key={`park--0`} value={0}>All Parks</option>
                         {parks.map(park => { return (<option key={`park--${park.id}`} value={park.id}>{park.name}</option>) })}
                     </select>
