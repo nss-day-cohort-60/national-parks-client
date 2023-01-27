@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react"
 
 export const BlogFilter = () => {
-    const [blogs, setBlogs] = useState([{ }])
-    const [parks, setParks] = useState([{ }])
+    const [blogs, setBlogs] = useState([{}])
+    const [parks, setParks] = useState([{}])
+    const [park_id, setParkId] = useState(0)
     const [searchTerm, setSearchTerm] = useState(" ")
 
     const filteredBlogFetcher = (park_id) => {
@@ -33,36 +34,38 @@ export const BlogFilter = () => {
         menuHTML()
     }, [parks, blogs])
 
-    const filterAndSearch = () => {
-        return fetch(`http://localhost:8088/blogs?park_id=&key_word=tree`)
-                .then(res => res.json())
-                .then(data => setBlogs(data))
+    const filterAndSearch = (park_id) => {
+        return fetch(`http://localhost:8088/blogs?park_id=${park_id}&key_word=${searchTerm}`)
+            .then(res => res.json())
+            .then(data => setBlogs(data))
     }
 
     useEffect(() => {
-
-    }, [searchTerm])
+        if (setParkId !== 0 & searchTerm !== "" & searchTerm !== " ") {
+            filterAndSearch(park_id)
+        }
+        // need a /blogs?key_word="sfefsef" function in server
+    }, [searchTerm, park_id])
 
     const menuHTML = () => {
         return (
             <section className='blogFilterSearch--container'>
                 <div className="filter--container">
                     <label>Filter Blogs by Park: </label>
-                    <select className="filter" onChange={ (e) => {
-                        if (searchTerm === " " || searchTerm === ""){
-                            e.target.value == 0? getAllBlogs() : filteredBlogFetcher(e.target.value)}
-                        else {
-                            filteredBlogFetcher('*')
+                    <select className="filter" onChange={(e) => {
+                        setParkId(e.target.value)
+                        if (searchTerm === " " || searchTerm === "") {
+                            e.target.value == 0 ? getAllBlogs() : filteredBlogFetcher(e.target.value)
                         }
-                        }
-                        }>
+                    }
+                    }>
                         <option key={`park--0`} value={0}>All Parks</option>
                         {parks.map(park => { return (<option key={`park--${park.id}`} value={park.id}>{park.name}</option>) })}
                     </select>
                 </div>
                 <div className="search--container">
                     <label>Search Blogs: </label>
-                    <input className="search" onChange={ (e) => {setSearchTerm(e.target.value)} } placeholder="type search terms here"/>
+                    <input className="search" onChange={(e) => { setSearchTerm(e.target.value) }} placeholder="type search terms here" />
                 </div>
             </section>
         )
