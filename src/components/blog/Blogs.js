@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react"
 import "./Blogs.css"
-import { BlogFilter } from "../views/BlogFilter"
 import { NavBar } from "../nav/NavBar"
 
 
