@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react"
 
-export const BlogFilter = () => {
-    const [blogs, setBlogs] = useState([{}])
-    const [parks, setParks] = useState([{}])
+export const BlogFilter = ({ setterFunction }) => {
+    const [blogs, setBlogs] = useState([{ }])
+    const [parks, setParks] = useState([{ }])
     const [park_id, setParkId] = useState(0)
-    const [searchTerm, setSearchTerm] = useState(" ")
+    const [searchTerm, setSearchTerm] = useState("")
 
     const filteredBlogFetcher = (park_id) => {
         return fetch(`http://localhost:8088/blogs?park_id=${park_id}`)
@@ -65,7 +65,7 @@ export const BlogFilter = () => {
                 </div>
                 <div className="search--container">
                     <label>Search Blogs: </label>
-                    <input className="search" onChange={(e) => { setSearchTerm(e.target.value) }} placeholder="type search terms here" />
+                    <input className="search" onChange={ (e) => {setterFunction(e.target.value)} } placeholder="type search terms here"/>
                 </div>
             </section>
         )
