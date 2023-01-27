@@ -2,7 +2,6 @@ import React, { useState } from "react"
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom"
 import { NavBar } from "../nav/NavBar";
-import { BlogFilter } from "../views/BlogFilter";
 
 export const Login = () => {
     const [email, set] = useState("")

@@ -1,16 +1,10 @@
 import { useState, useEffect } from "react"
 
-export const BlogFilter = ({ setterFunction }) => {
-    const [blogs, setBlogs] = useState([{ }])
+export const BlogFilter = ({ searchSetterFunction, searchTerm, blogs, blogSetterFunction }) => {
+    // const [blogs, setBlogs] = useState([{ }])
     const [parks, setParks] = useState([{ }])
-    const [park_id, setParkId] = useState(0)
-    const [searchTerm, setSearchTerm] = useState("")
-
-    const filteredBlogFetcher = (park_id) => {
-        return fetch(`http://localhost:8088/blogs?park_id=${park_id}`)
-            .then(res => res.json())
-            .then(data => setBlogs(data))
-    }
+    const [parkId, setParkId] = useState(0)
+    // const [searchTerm, setSearchTerm] = useState("")
 
     const parkList = () => {
         return fetch(`http://localhost:8088/parks`)
@@ -21,7 +15,7 @@ export const BlogFilter = ({ setterFunction }) => {
     const getAllBlogs = () => {
         return fetch(`http://localhost:8088/blogs`)
             .then(res => res.json())
-            .then(data => setBlogs(data))
+            .then(data => blogSetterFunction(data))
     }
 
     useEffect(() => {
@@ -34,18 +28,32 @@ export const BlogFilter = ({ setterFunction }) => {
         menuHTML()
     }, [parks, blogs])
 
-    const filterAndSearch = (park_id) => {
-        return fetch(`http://localhost:8088/blogs?park_id=${park_id}&key_word=${searchTerm}`)
+    const parkFilteredBlogFetcher = (parkId) => {
+        return fetch(`http://localhost:8088/blogs?park_id=${parkId}`)
             .then(res => res.json())
-            .then(data => setBlogs(data))
+            .then(data => blogSetterFunction(data))
+    }
+
+    const filterAndSearchBlogs = (parkId) => {
+        return fetch(`http://localhost:8088/blogs?park_id=${parkId}&key_word=${searchTerm}`)
+            .then(res => res.json())
+            .then(data => blogSetterFunction(data))
+    }
+
+    const searchBlogs = (parkId) => {
+        return fetch(`http://localhost:8088/blogs?key_word=${searchTerm}`)
+            .then(res => res.json())
+            .then(data => blogSetterFunction(data))
     }
 
     useEffect(() => {
-        if (setParkId !== 0 & searchTerm !== "" & searchTerm !== " ") {
-            filterAndSearch(park_id)
+        if (parkId != 0 & searchTerm !== "" & searchTerm !== " ") {
+            filterAndSearchBlogs(parkId)
         }
-        // need a /blogs?key_word="sfefsef" function in server
-    }, [searchTerm, park_id])
+        else if (parkId == 0 & searchTerm !== "" & searchTerm !== " ") {
+            searchBlogs(searchTerm)
+        }
+    }, [searchTerm, parkId])
 
     const menuHTML = () => {
         return (
@@ -55,7 +63,7 @@ export const BlogFilter = ({ setterFunction }) => {
                     <select className="filter" onChange={(e) => {
                         setParkId(e.target.value)
                         if (searchTerm === " " || searchTerm === "") {
-                            e.target.value == 0 ? getAllBlogs() : filteredBlogFetcher(e.target.value)
+                            e.target.value == 0 ? getAllBlogs() : parkFilteredBlogFetcher(e.target.value)
                         }
                     }
                     }>
@@ -65,7 +73,7 @@ export const BlogFilter = ({ setterFunction }) => {
                 </div>
                 <div className="search--container">
                     <label>Search Blogs: </label>
-                    <input className="search" onChange={ (e) => {setterFunction(e.target.value)} } placeholder="type search terms here"/>
+                    <input className="search" onChange={ (e) => {searchSetterFunction(e.target.value)} } placeholder="type search terms here"/>
                 </div>
             </section>
         )
